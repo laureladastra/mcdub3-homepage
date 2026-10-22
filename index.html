@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Midnight Club 3: DUB Edition for Nintendo Switch: Installer</title>
+    <meta
+      name="description"
+      content="Builds the Nintendo Switch package of mcdub3-nx from your own Xbox copy of Midnight Club 3: DUB Edition, right in your browser."
+    />
+    <meta name="theme-color" content="#0a0a0f" />
+    <link rel="icon" type="image/png" sizes="32x32" href="img/icon-32.png" />
+    <link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
+    <link rel="preload" as="image" href="img/background.webp" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="backdrop" aria-hidden="true"></div>
+    <main>
+      <header>
+        <h1>
+          <img
+            src="img/logo.webp"
+            alt="Midnight Club 3: DUB Edition"
+            width="1100"
+            height="309"
+          />
+        </h1>
+        <p class="tagline">
+          Switch installer
+          <span class="version" id="version"></span>
+        </p>
+        <p class="lead">
+          Builds the
+          <strong>Nintendo Switch</strong>
+          package of
+          <strong>mcdub3-nx</strong>
+          from your own
+          <strong>original Xbox</strong>
+          copy of the game. Everything happens in
+          <strong>this browser</strong>
+          : nothing is uploaded.
+        </p>
+      </header>
+
+      <section class="step">
+        <h2>
+          <span class="num">1</span>
+          Choose your copy of the game
+        </h2>
+        <div class="buttons">
+          <label class="button" for="iso">Disc image (.iso)</label>
+          <label class="button secondary" for="folder">Extracted folder</label>
+        </div>
+        <input id="iso" type="file" accept=".iso,.xiso" />
+        <input id="folder" type="file" webkitdirectory />
+        <p class="warning">
+          <strong>
+            Only the US edition (NTSC-U) of the game is supported for now.
+          </strong>
+          PAL and Japanese discs are not accepted yet.
+        </p>
+        <p class="hint">
+          A disc image can be a
+          <strong>Redump</strong>
+          dump or a trimmed
+          <strong>XISO</strong>
+          . An extracted folder is the one that holds
+          <code>default.xbe</code>
+          ,
+          <code>assets_x.dat</code>
+          and the
+          <code>video</code>
+          folder.
+        </p>
+        <div class="status" id="status" hidden>
+          <img
+            class="cover"
+            id="cover"
+            src="img/cover.jpg"
+            alt=""
+            width="64"
+            height="64"
+            hidden
+          />
+          <div>
+            <div class="status-title" id="statusTitle"></div>
+            <div class="status-detail" id="statusDetail"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="step">
+        <h2>
+          <span class="num">2</span>
+          Create the package
+        </h2>
+        <button id="create" class="primary" disabled>
+          Create mcdub3-nx.zip
+        </button>
+        <p class="hint">
+          The zip is about as large as the game (3.4 GB) and is written straight
+          to your downloads folder while it is made. Keep this tab open until it
+          finishes.
+        </p>
+        <div class="progress" id="progress" hidden>
+          <div class="bar"><div class="fill" id="fill"></div></div>
+          <div class="progress-text" id="progressText"></div>
+        </div>
+        <div class="log" id="log"></div>
+      </section>
+
+      <section class="step">
+        <h2>
+          <span class="num">3</span>
+          Copy it to the Switch
+        </h2>
+        <ol>
+          <li>
+            Extract
+            <code>mcdub3-nx.zip</code>
+            and copy the
+            <code>switch</code>
+            folder inside it to the
+            <strong>root of your SD card</strong>
+            , merging it with the one already there.
+          </li>
+          <li>
+            You now have
+            <code>sdmc:/switch/mcdub3-nx/</code>
+            with the
+            <code>.nro</code>
+            and the
+            <code>game</code>
+            folder.
+          </li>
+          <li>
+            Start
+            <code>mcdub3-nx-usa.nro</code>
+            from the Homebrew Menu in
+            <strong>title takeover</strong>
+            mode (hold
+            <strong>R</strong>
+            while launching a game), or install the NSP forwarder from the
+            <a
+              id="releaseLink"
+              href="https://github.com/laureladastra/mcdub3-nx/releases/latest"
+              target="_blank"
+              rel="noopener"
+            >
+              releases page
+            </a>
+            for a Home Menu icon.
+          </li>
+        </ol>
+        <p class="hint">
+          Graphics and controller settings go in
+          <code>mcdub3_env.txt</code>
+          in the same folder; the package includes
+          <code>mcdub3_env.example.txt</code>
+          to start from.
+        </p>
+      </section>
+
+      <footer>
+        <p class="links">
+          <a
+            href="https://github.com/laureladastra/mcdub3-nx"
+            target="_blank"
+            rel="noopener"
+          >
+            Source code
+          </a>
+          <span aria-hidden="true">·</span>
+          <a
+            href="https://github.com/laureladastra/mcdub3-nx/releases"
+            target="_blank"
+            rel="noopener"
+          >
+            Releases
+          </a>
+        </p>
+        <p class="legal">
+          Midnight Club 3: DUB Edition is a trademark of Take-Two Interactive
+          Software, Inc.; artwork © Rockstar Games. mcdub3-nx is an unofficial
+          fan project, not affiliated with or endorsed by Rockstar Games,
+          Take-Two, Nintendo or Microsoft. This site hosts no game data: your
+          disc image is read only inside your browser and its files go straight
+          into the zip saved on your computer. You need your own legally
+          obtained copy of the game.
+        </p>
+      </footer>
+    </main>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

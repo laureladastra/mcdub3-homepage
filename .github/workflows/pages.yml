@@ -1,0 +1,49 @@
+# Publishes the installer on GitHub Pages with the latest mcdub3-nx release staged in release/.
+# Runs on every push to main, by hand (Actions > Deploy > Run workflow), daily to pick up new releases, and on a
+# "mcdub3-release" repository_dispatch, which the game's release workflow can send right after publishing.
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  repository_dispatch:
+    types: [mcdub3-release]
+  schedule:
+    - cron: "17 4 * * *"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Stage the latest release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: scripts/fetch-release.sh
+
+      - name: Site
+        run: |
+          mkdir -p "$RUNNER_TEMP/site"
+          cp -r index.html style.css app.js worker.js sw.js lib img release "$RUNNER_TEMP/site/"
+          touch "$RUNNER_TEMP/site/.nojekyll"
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ runner.temp }}/site
+      - id: deployment
+        uses: actions/deploy-pages@v4

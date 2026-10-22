@@ -1,0 +1,16 @@
+{
+  "version": "0.1.0",
+  "repo": "laureladastra/mcdub3-nx",
+  "editions": [
+    {
+      "id": "usa",
+      "name": "NTSC-U (North America)",
+      "xbe_size": 4874240,
+      "xbe_fnv64": "45be4d110be69ba7",
+      "nro": "mcdub3-nx-usa.nro"
+    }
+  ],
+  "extras": [
+    "mcdub3_env.example.txt"
+  ]
+}
