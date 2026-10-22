@@ -1,8 +1,8 @@
-# mcdub3-nx installer
+# Midnight Club 3: Dub Edition Installation Page
 
-A static web page that builds the Nintendo Switch package of
-[mcdub3-nx](https://github.com/laureladastra/mcdub3-nx) from the player's own copy of *Midnight Club 3: DUB Edition*.
-The player picks a disc image (Redump or XISO) or an extracted folder, and the page:
+<p align="center"><img src="img/website.png" alt="Midnight Club 3: DUB Edition"</p>
+
+A static web page that provides a guided experience to build the Nintendo Switch package of [mcdub3-nx](https://github.com/laureladastra/mcdub3-nx) from the player's own copy of *Midnight Club 3: DUB Edition*. The player picks a disc image (Redump or XISO) or an extracted folder, and the page:
 
 1. reads the disc's file system in the browser (`lib/xdvdfs.js`, a port of the toolkit's `tools/xiso`);
 2. checks `default.xbe` the way the game does at boot (size + FNV-1a 64, `lib/xbe.js`) against `release/manifest.json`;
@@ -13,8 +13,6 @@ The player picks a disc image (Redump or XISO) or an extracted folder, and the p
    switch/mcdub3-nx/mcdub3_env.example.txt
    switch/mcdub3-nx/game/…            (the disc)
    ```
-
-Nothing is uploaded. No build step and no dependencies: plain HTML, CSS and ES modules.
 
 ## Run it locally
 
