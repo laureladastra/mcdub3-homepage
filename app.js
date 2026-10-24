@@ -10,7 +10,8 @@ manifest.then((m) => {
   $('version').textContent = `v${m.version}`;
   $('releaseLink').href = `https://github.com/${m.repo}/releases/tag/v${m.version}`;
   // the deployed manifest lists only the editions whose NRO is in the release (scripts/fetch-release.sh)
-  const names = m.editions.filter((e) => e.released).map((e) => e.name);
+  // an edition whose NRO is not in this release yet is still listed, with when it comes
+  const names = m.editions.map((e) => (e.released ? e.name : `${e.name}, with the next release`));
   $('editionList').textContent = names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names.at(-1)}` : names[0];
 });
 

@@ -28,9 +28,10 @@ Service workers need `localhost` or HTTPS, so opening `index.html` as a file doe
 ## Deploying
 
 `.github/workflows/pages.yml` publishes the site on GitHub Pages (Settings > Pages > Source: **GitHub Actions**). It
-runs on every push to `main`, daily, by hand, and on a `mcdub3-release` repository dispatch. Each run copies the
-latest release's NRO into `release/`, because GitHub's release downloads have no CORS headers and the page can't
-fetch them itself.
+runs on every push to `main`, by hand, on a `mcdub3-release` repository dispatch, and hourly; the hourly run deploys
+only when the latest release isn't the one the live site serves, so a new release is live within the hour. Each
+deploy copies the release's NROs into `release/`: GitHub's API allows browsers, but the release files themselves
+come from a host without CORS headers, so the page can't fetch them itself.
 
 To redeploy right after a release, the game's release workflow can send the dispatch (with a token that can write to
 this repository):

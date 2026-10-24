@@ -1,6 +1,8 @@
-# Publishes the installer on GitHub Pages with the latest mcdub3-nx release staged in release/.
-# Runs on every push to main, by hand (Actions > Deploy > Run workflow), daily to pick up new releases, and on a
-# "mcdub3-release" repository_dispatch, which the game's release workflow can send right after publishing.
+# Publishes the installer on GitHub Pages with the latest mcdub3-nx release staged in release/ (the page cannot fetch
+# release files itself: release-assets.githubusercontent.com sends no CORS headers).
+# Runs on every push to main, by hand (Actions > Deploy > Run workflow), on a "mcdub3-release" repository_dispatch,
+# and hourly: that run deploys only when the latest release is not the one the live site serves, so a new release
+# is on the site within the hour without a token in the game's repository.
 name: Deploy
 
 on:
@@ -10,7 +12,7 @@ on:
   repository_dispatch:
     types: [mcdub3-release]
   schedule:
-    - cron: "17 4 * * *"
+    - cron: "17 * * * *"
 
 permissions:
   contents: read
@@ -22,7 +24,32 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  check:
+    runs-on: ubuntu-24.04
+    outputs:
+      deploy: ${{ steps.compare.outputs.deploy }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: release/editions.json
+          sparse-checkout-cone-mode: false
+      - id: compare
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT: ${{ github.event_name }}
+        run: |
+          if [ "$EVENT" != schedule ]; then
+            echo "deploy=true" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          latest=$(gh api "repos/$(jq -r .repo release/editions.json)/releases/latest" --jq .tag_name)
+          page=$(gh api "repos/$GITHUB_REPOSITORY/pages" --jq .html_url)
+          live=$(curl -fsSL "${page%/}/release/manifest.json" | jq -r '"v" + .version' || echo none)
+          echo "latest release $latest, live site $live"
+          echo "deploy=$([ "$latest" != "$live" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
   deploy:
+    needs: check
+    if: needs.check.outputs.deploy == 'true'
     runs-on: ubuntu-24.04
     environment:
       name: github-pages
