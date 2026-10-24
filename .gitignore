@@ -1,4 +1,5 @@
 # Staged from the mcdub3-nx release by scripts/fetch-release.sh
 /release/*.nro
 /release/*.txt
+/release/manifest.json
 .DS_Store

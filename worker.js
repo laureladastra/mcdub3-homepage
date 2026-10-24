@@ -17,7 +17,7 @@ async function fetchFile(url) {
   return new Uint8Array(await response.arrayBuffer());
 }
 
-self.onmessage = async ({ data: { source, downloads, port } }) => {
+self.onmessage = async ({ data: { source, downloads, gameDir, port } }) => {
   try {
     self.postMessage({ type: 'log', text: 'Downloading the Switch build…' });
     const entries = [];
@@ -27,7 +27,7 @@ self.onmessage = async ({ data: { source, downloads, port } }) => {
     }
     self.postMessage({ type: 'log', text: 'Reading the game files…' });
     for (const f of await gameFiles(source)) {
-      entries.push({ path: `${INSTALL_DIR}game/${f.path}`, size: f.size, chunks: f.chunks });
+      entries.push({ path: `${INSTALL_DIR}${gameDir}/${f.path}`, size: f.size, chunks: f.chunks });
     }
 
     const total = zipSize(entries);

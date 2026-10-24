@@ -56,9 +56,10 @@
         <input id="folder" type="file" webkitdirectory />
         <p class="warning">
           <strong>
-            Only the US edition (NTSC-U) of the game is supported for now.
+            Supported editions:
+            <span id="editionList">USA (NTSC-U) and Europe (PAL)</span>.
           </strong>
-          PAL and Japanese discs are not accepted yet.
+          Japanese discs are not accepted yet.
         </p>
         <p class="hint">
           A disc image can be a
@@ -117,8 +118,7 @@
         </h2>
         <ol>
           <li>
-            Extract
-            <code>mcdub3-nx.zip</code>
+            Extract the zip
             and copy the
             <code>switch</code>
             folder inside it to the
@@ -130,14 +130,18 @@
             <code>sdmc:/switch/mcdub3-nx/</code>
             with the
             <code>.nro</code>
-            and the
+            and the disc: in
             <code>game</code>
-            folder.
+            for the USA edition, in
+            <code>game-eur</code>
+            for the European one. Both editions can live side by side.
           </li>
           <li>
             Start
             <code>mcdub3-nx-usa.nro</code>
-            from the Homebrew Menu in
+            (USA) or
+            <code>mcdub3-nx-eur.nro</code>
+            (Europe) from the Homebrew Menu in
             <strong>title takeover</strong>
             mode (hold
             <strong>R</strong>
@@ -158,7 +162,9 @@
           <code>mcdub3_env.txt</code>
           in the same folder; the package includes
           <code>mcdub3_env.example.txt</code>
-          to start from.
+          to start from. The European disc plays in English by default; add
+          <code>RECOMP_LANGUAGE=fr</code> (or <code>de</code>, <code>es</code>,
+          <code>it</code>) for another language.
         </p>
       </section>
 

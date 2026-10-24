@@ -1,0 +1,25 @@
+{
+  "repo": "laureladastra/mcdub3-nx",
+  "editions": [
+    {
+      "id": "usa",
+      "name": "USA (NTSC-U)",
+      "xbe_size": 4874240,
+      "xbe_fnv64": "45be4d110be69ba7",
+      "nro": "mcdub3-nx-usa.nro",
+      "game_dir": "game"
+    },
+    {
+      "id": "eur",
+      "name": "Europe (PAL)",
+      "xbe_size": 4874240,
+      "xbe_fnv64": "6b9edf2e0233549f",
+      "nro": "mcdub3-nx-eur.nro",
+      "game_dir": "game-eur",
+      "note": "English, French, German, Spanish and Italian: set RECOMP_LANGUAGE=fr, de, es or it in mcdub3_env.txt."
+    }
+  ],
+  "extras": [
+    "mcdub3_env.example.txt"
+  ]
+}

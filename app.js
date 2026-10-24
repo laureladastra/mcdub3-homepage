@@ -9,7 +9,12 @@ const manifest = fetch('release/manifest.json', { cache: 'no-cache' }).then((r) 
 manifest.then((m) => {
   $('version').textContent = `v${m.version}`;
   $('releaseLink').href = `https://github.com/${m.repo}/releases/tag/v${m.version}`;
+  // the deployed manifest lists only the editions whose NRO is in the release (scripts/fetch-release.sh)
+  const names = m.editions.filter((e) => e.released).map((e) => e.name);
+  $('editionList').textContent = names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names.at(-1)}` : names[0];
 });
+
+const zipName = (e) => (e ? `mcdub3-nx-${e.id}.zip` : 'mcdub3-nx.zip');
 
 let source = null;
 let edition = null;
@@ -46,6 +51,7 @@ async function choose(newSource, label) {
   source = newSource;
   edition = null;
   create.disabled = true;
+  create.textContent = `Create ${zipName(null)}`;
   showStatus('', 'Checking…', label);
   try {
     const m = await manifest;
@@ -57,8 +63,12 @@ async function choose(newSource, label) {
     if (game.info && game.info.titleId !== TITLE_ID) {
       showStatus('bad', 'This is not Midnight Club 3: DUB Edition',
         `Its default.xbe is “${game.info.titleName || 'unknown'}” (title ID ${game.info.titleId.toUpperCase()}).`);
+    } else if (game.edition && !game.edition.released) {
+      showStatus('bad', `${game.edition.name}: not in this release yet`,
+        `This disc is recognised, but release v${m.version} does not include ${game.edition.nro}. ` +
+        'It will work here as soon as a release with that build is published.');
     } else if (!game.edition) {
-      const supported = m.editions.map((e) => e.name).join(', ');
+      const supported = m.editions.filter((e) => e.released).map((e) => e.name).join(', ');
       showStatus('bad', 'This edition is not supported yet',
         `Its default.xbe (${game.size} bytes, FNV-1a ${game.hash}) is another edition or a modified file. ` +
         `Supported: ${supported}. Please open an issue with these numbers.`);
@@ -66,7 +76,9 @@ async function choose(newSource, label) {
       showStatus('bad', 'The copy is incomplete', `Missing ${game.missing.join(', ')}. Choose the whole extracted disc.`);
     } else {
       edition = game.edition;
-      showStatus('good', `Midnight Club 3: DUB Edition, ${edition.name}`, summary);
+      showStatus('good', `Midnight Club 3: DUB Edition, ${edition.name}`,
+        `${summary} · installs to ${edition.game_dir}/, starts with ${edition.nro}` + (edition.note ? `. ${edition.note}` : ''));
+      create.textContent = `Create ${zipName(edition)}`;
       create.disabled = busy;
     }
   } catch (error) {
@@ -124,6 +136,8 @@ create.addEventListener('click', async () => {
     return;
   }
   const m = await manifest;
+  // the edition at the click: choosing another copy during the download must not change this package
+  const chosen = edition;
   busy = true;
   create.disabled = true;
   $('progress').hidden = false;
@@ -149,16 +163,17 @@ create.addEventListener('click', async () => {
       log(data.text);
     } else if (data.type === 'size') {
       const id = crypto.randomUUID();
+      const filename = zipName(chosen);
       const ready = new MessageChannel();
       const registered = new Promise((resolve) => (ready.port1.onmessage = resolve));
-      controller.postMessage({ type: 'download', id, filename: 'mcdub3-nx.zip', size: data.size }, [channel.port2, ready.port2]);
+      controller.postMessage({ type: 'download', id, filename, size: data.size }, [channel.port2, ready.port2]);
       await registered;
       // a navigation always reaches the service worker (a plain <a download> may go straight to the network)
       const frame = document.createElement('iframe');
       frame.hidden = true;
-      frame.src = `download/${id}/mcdub3-nx.zip`;
+      frame.src = `download/${id}/${filename}`;
       document.body.appendChild(frame);
-      log(`Saving mcdub3-nx.zip (${formatSize(data.size)}, ${data.count} files)…`);
+      log(`Saving ${filename} (${formatSize(data.size)}, ${data.count} files)…`);
     } else if (data.type === 'progress') {
       const fraction = data.sent / data.total;
       const seconds = (Date.now() - started) / 1000;
@@ -180,8 +195,8 @@ create.addEventListener('click', async () => {
   };
 
   const downloads = [
-    { url: new URL(`release/${edition.nro}`, location.href).href, path: edition.nro },
+    { url: new URL(`release/${chosen.nro}`, location.href).href, path: chosen.nro },
     ...(m.extras ?? []).map((name) => ({ url: new URL(`release/${name}`, location.href).href, path: name })),
   ];
-  worker.postMessage({ source, downloads, port: channel.port1 }, [channel.port1]);
+  worker.postMessage({ source, downloads, gameDir: chosen.game_dir, port: channel.port1 }, [channel.port1]);
 });
