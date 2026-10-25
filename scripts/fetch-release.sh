@@ -35,13 +35,20 @@ for extra in $(jq -r '.extras[]?' release/manifest.json); do
 done
 
 # The page accepts a disc when default.xbe matches the manifest; the game checks the same at boot. Make sure both
-# agree: config/xbe_editions.h lists every accepted XBE since the European edition, config/xbe_facts.h the lifted
-# one before it. Only for the released editions: an older release cannot know a newer edition.
+# agree, for the released editions only (an older release cannot know a newer edition). The list of accepted XBEs
+# has moved with mcdub3-nx: config/dub/xbe_editions.h since v0.3.0 (beside config/remix/ for DUB Edition Remix),
+# config/xbe_editions.h for v0.2.0, and config/xbe_facts.h, the lifted disc alone, before that.
 raw="https://raw.githubusercontent.com/$REPO/$TAG/config"
-if editions=$(curl -fsSL "$raw/xbe_editions.h" 2>/dev/null); then
-  known=$(sed -n 's/.*X("\([a-z-]*\)", *0x\([0-9a-fA-F]*\)ull.*/\1 \2/p' <<<"$editions" | tr A-F a-f)
-else
-  facts=$(curl -fsSL "$raw/xbe_facts.h")
+known=
+for header in dub/xbe_editions.h xbe_editions.h; do
+  if editions=$(curl -fsSL "$raw/$header" 2>/dev/null); then
+    known=$(sed -n 's/.*X("\([a-z-]*\)", *0x\([0-9a-fA-F]*\)ull.*/\1 \2/p' <<<"$editions" | tr A-F a-f)
+    break
+  fi
+done
+if [ -z "$known" ]; then
+  facts=$(curl -fsSL "$raw/xbe_facts.h") \
+    || { echo "$TAG has none of config/dub/xbe_editions.h, config/xbe_editions.h, config/xbe_facts.h: where did the edition list go?"; exit 1; }
   known="$(sed -n 's/^#define MC3_EDITION *"\(.*\)"/\1/p' <<<"$facts") $(sed -n 's/^#define MC3_XBE_FNV64 *0x\([0-9a-fA-F]*\)ull/\1/p' <<<"$facts" | tr A-F a-f)"
 fi
 while read -r id fnv; do
