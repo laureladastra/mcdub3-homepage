@@ -54,12 +54,13 @@
         </div>
         <input id="iso" type="file" accept=".iso,.xiso" />
         <input id="folder" type="file" webkitdirectory />
-        <p class="warning">
-          <strong>
-            Supported editions:
-            <span id="editionList">US (NTSC-U) and Europe (PAL)</span>
-          </strong>
-        </p>
+        <div class="warning">
+          <strong>Supported discs</strong>
+          <div id="editionList">
+            <div>Midnight Club 3: DUB Edition: USA (NTSC-U), Europe (PAL)</div>
+            <div>Midnight Club 3: DUB Edition Remix: USA (NTSC-U), Europe (PAL)</div>
+          </div>
+        </div>
         <p class="hint">
           A disc image can be a
           <strong>Redump</strong>
@@ -99,7 +100,7 @@
           Create mcdub3-nx.zip
         </button>
         <p class="hint">
-          The zip is about as large as the game (3.4 GB) and is written straight
+          The zip is about as large as the game (3.4 GB, 4.6 GB for Remix) and is written straight
           to your downloads folder while it is made. Keep this tab open until it
           finishes.
         </p>
@@ -117,58 +118,37 @@
         </h2>
         <ol>
           <li>
-            Extract the zip and copy the
-            <code>switch</code>
-            folder inside it to the
-            <strong>root of your SD card</strong>
-            , merging it with the one already there.
+            Extract the zip and copy the <code>switch</code> folder inside it to
+            the <strong>root of your SD card</strong>, merging it with the one
+            already there.
           </li>
           <li>
-            You now have
-            <code>sdmc:/switch/mcdub3-nx/</code>
-            with the
-            <code>.nro</code>
-            and the disc: in
-            <code>game</code>
-            for the USA edition, in
-            <code>game-eur</code>
-            for the European one. Both editions can live side by side.
+            Each game is its own app: <code>sdmc:/switch/mcdub3-nx/</code> for
+            DUB Edition, <code>sdmc:/switch/mcdub3remix-nx/</code> for Remix,
+            with the <code>.nro</code> and the disc in <code>game-eur</code>
+            (Europe) or <code>game</code> / <code>game-usa</code> (USA).
+            Editions and games can live side by side.
           </li>
           <li>
-            Start
-            <code>mcdub3-nx-usa.nro</code>
-            (USA) or
-            <code>mcdub3-nx-eur.nro</code>
-            (Europe) from the Homebrew Menu in
-            <strong>title takeover</strong>
-            mode (hold
-            <strong>R</strong>
-            while launching a game), or install the NSP forwarder from the
-            <a
-              id="releaseLink"
-              href="https://github.com/laureladastra/mcdub3-nx/releases/latest"
-              target="_blank"
-              rel="noopener"
-            >
-              releases page
-            </a>
-            for a Home Menu icon.
+            Start the <code>.nro</code> named in step 1 from the Homebrew Menu in
+            <strong>title takeover</strong> mode (hold <strong>R</strong> while
+            launching a game).
           </li>
         </ol>
         <p class="hint">
-          Graphics and controller settings go in
-          <code>mcdub3_env.txt</code>
-          in the same folder; the package includes
-          <code>mcdub3_env.example.txt</code>
-          to start from. The European disc plays in English by default; add
-          <code>RECOMP_LANGUAGE=fr</code>
-          (or
-          <code>de</code>
-          ,
-          <code>es</code>
-          ,
-          <code>it</code>
-          ) for another language.
+          Graphics and controller settings go in <code>mcdub3_env.txt</code>
+          (<code>mcdub3remix_env.txt</code> for Remix) in the same folder; the
+          package includes an <code>.example.txt</code> to start from. European
+          discs play in English by default; add <code>RECOMP_LANGUAGE=fr</code>
+          (or <code>de</code>, <code>es</code>, <code>it</code>) for another
+          language. The Switch builds come from
+          <a
+            id="releaseLink"
+            href="https://github.com/laureladastra/mcdub3-nx/releases/latest"
+            target="_blank"
+            rel="noopener"
+            >the latest release</a
+          >.
         </p>
       </section>
 

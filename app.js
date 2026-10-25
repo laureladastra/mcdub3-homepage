@@ -9,13 +9,21 @@ const manifest = fetch('release/manifest.json', { cache: 'no-cache' }).then((r) 
 manifest.then((m) => {
   $('version').textContent = `v${m.version}`;
   $('releaseLink').href = `https://github.com/${m.repo}/releases/tag/v${m.version}`;
-  // the deployed manifest lists only the editions whose NRO is in the release (scripts/fetch-release.sh)
-  // an edition whose NRO is not in this release yet is still listed, with when it comes
-  const names = m.editions.map((e) => (e.released ? e.name : `${e.name}, with the next release`));
-  $('editionList').textContent = names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names.at(-1)}` : names[0];
+  // one line per game; an edition whose NRO is not in this release yet is still listed, with when it comes
+  const games = new Map();
+  for (const e of m.editions) {
+    games.set(e.game, [...(games.get(e.game) ?? []), e]);
+  }
+  $('editionList').replaceChildren(...[...games].map(([game, editions]) => {
+    const line = document.createElement('div');
+    const names = editions.map((e) => (e.released ? e.name : `${e.name} (with the next release)`));
+    line.textContent = `${game}: ${names.join(', ')}`;
+    return line;
+  }));
 });
 
-const zipName = (e) => (e ? `mcdub3-nx-${e.id}.zip` : 'mcdub3-nx.zip');
+// mcdub3-nx-eur.nro -> mcdub3-nx-eur.zip
+const zipName = (e) => (e ? e.nro.replace(/\.nro$/, '.zip') : 'the package');
 
 let source = null;
 let edition = null;
@@ -62,14 +70,14 @@ async function choose(newSource, label) {
     }
     const summary = `${label} · ${game.count} files, ${formatSize(game.total)}`;
     if (game.info && game.info.titleId !== TITLE_ID) {
-      showStatus('bad', 'This is not Midnight Club 3: DUB Edition',
+      showStatus('bad', 'This is not Midnight Club 3',
         `Its default.xbe is “${game.info.titleName || 'unknown'}” (title ID ${game.info.titleId.toUpperCase()}).`);
     } else if (game.edition && !game.edition.released) {
-      showStatus('bad', `${game.edition.name}: not in this release yet`,
+      showStatus('bad', `${game.edition.game}, ${game.edition.name}: not in this release yet`,
         `This disc is recognised, but release v${m.version} does not include ${game.edition.nro}. ` +
         'It will work here as soon as a release with that build is published.');
     } else if (!game.edition) {
-      const supported = m.editions.filter((e) => e.released).map((e) => e.name).join(', ');
+      const supported = m.editions.filter((e) => e.released).map((e) => `${e.game} ${e.name}`).join(', ');
       showStatus('bad', 'This edition is not supported yet',
         `Its default.xbe (${game.size} bytes, FNV-1a ${game.hash}) is another edition or a modified file. ` +
         `Supported: ${supported}. Please open an issue with these numbers.`);
@@ -77,8 +85,10 @@ async function choose(newSource, label) {
       showStatus('bad', 'The copy is incomplete', `Missing ${game.missing.join(', ')}. Choose the whole extracted disc.`);
     } else {
       edition = game.edition;
-      showStatus('good', `Midnight Club 3: DUB Edition, ${edition.name}`,
-        `${summary} · installs to ${edition.game_dir}/, starts with ${edition.nro}` + (edition.note ? `. ${edition.note}` : ''));
+      $('cover').src = edition.cover;
+      showStatus('good', `${edition.game}, ${edition.name}`,
+        `${summary} · installs to sdmc:/${edition.install_dir}/${edition.game_dir}/, starts with ${edition.nro}` +
+        (edition.note ? `. ${edition.note}` : ''));
       create.textContent = `Create ${zipName(edition)}`;
       create.disabled = busy;
     }
@@ -136,7 +146,6 @@ create.addEventListener('click', async () => {
     log(error.message, 'error');
     return;
   }
-  const m = await manifest;
   // the edition at the click: choosing another copy during the download must not change this package
   const chosen = edition;
   busy = true;
@@ -196,8 +205,10 @@ create.addEventListener('click', async () => {
   };
 
   const downloads = [
-    { url: new URL(`release/${chosen.nro}`, location.href).href, path: chosen.nro },
-    ...(m.extras ?? []).map((name) => ({ url: new URL(`release/${name}`, location.href).href, path: name })),
+    { url: new URL(`release/${chosen.nro}`, location.href).href, path: `${chosen.install_dir}/${chosen.nro}` },
+    // the one settings template, named after this game's app (scripts/fetch-release.sh)
+    { url: new URL('release/settings.example.txt', location.href).href, path: `${chosen.install_dir}/${chosen.settings}` },
   ];
-  worker.postMessage({ source, downloads, gameDir: chosen.game_dir, port: channel.port1 }, [channel.port1]);
+  const gameDir = `${chosen.install_dir}/${chosen.game_dir}`;
+  worker.postMessage({ source, downloads, gameDir, port: channel.port1 }, [channel.port1]);
 });

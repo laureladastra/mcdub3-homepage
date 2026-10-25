@@ -1,25 +1,76 @@
 {
   "repo": "laureladastra/mcdub3-nx",
+  "settings_template": "switch/mcdub3_env.example.txt",
   "editions": [
     {
-      "id": "usa",
+      "id": "dub-usa",
+      "game": "Midnight Club 3: DUB Edition",
       "name": "USA (NTSC-U)",
       "xbe_size": 4874240,
       "xbe_fnv64": "45be4d110be69ba7",
       "nro": "mcdub3-nx-usa.nro",
-      "game_dir": "game"
+      "install_dir": "switch/mcdub3-nx",
+      "game_dir": "game",
+      "settings": "mcdub3_env.example.txt",
+      "xbe_lists": [
+        "config/dub/xbe_editions.h",
+        "config/xbe_editions.h",
+        "config/xbe_facts.h"
+      ],
+      "xbe_id": "usa",
+      "cover": "img/cover.jpg"
     },
     {
-      "id": "eur",
+      "id": "dub-eur",
+      "game": "Midnight Club 3: DUB Edition",
       "name": "Europe (PAL)",
       "xbe_size": 4874240,
       "xbe_fnv64": "6b9edf2e0233549f",
       "nro": "mcdub3-nx-eur.nro",
+      "install_dir": "switch/mcdub3-nx",
       "game_dir": "game-eur",
-      "note": "English, French, German, Spanish and Italian: set RECOMP_LANGUAGE=fr, de, es or it in mcdub3_env.txt."
+      "settings": "mcdub3_env.example.txt",
+      "note": "English, French, German, Spanish and Italian: set RECOMP_LANGUAGE=fr, de, es or it in mcdub3_env.txt.",
+      "xbe_lists": [
+        "config/dub/xbe_editions.h",
+        "config/xbe_editions.h",
+        "config/xbe_facts.h"
+      ],
+      "xbe_id": "eur",
+      "cover": "img/cover.jpg"
+    },
+    {
+      "id": "remix-usa",
+      "game": "Midnight Club 3: DUB Edition Remix",
+      "name": "USA (NTSC-U)",
+      "xbe_size": 5099520,
+      "xbe_fnv64": "b9644e6610d2f14a",
+      "nro": "mcdub3remix-nx-usa.nro",
+      "install_dir": "switch/mcdub3remix-nx",
+      "game_dir": "game-usa",
+      "settings": "mcdub3remix_env.example.txt",
+      "xbe_lists": [
+        "config/remix/xbe_editions.h"
+      ],
+      "xbe_id": "usa",
+      "cover": "img/cover-remix.jpg"
+    },
+    {
+      "id": "remix-eur",
+      "game": "Midnight Club 3: DUB Edition Remix",
+      "name": "Europe (PAL)",
+      "xbe_size": 5099520,
+      "xbe_fnv64": "4438fd3ef9473ce0",
+      "nro": "mcdub3remix-nx-eur.nro",
+      "install_dir": "switch/mcdub3remix-nx",
+      "game_dir": "game-eur",
+      "settings": "mcdub3remix_env.example.txt",
+      "note": "English, French, German, Spanish and Italian: set RECOMP_LANGUAGE=fr, de, es or it in mcdub3remix_env.txt.",
+      "xbe_lists": [
+        "config/remix/xbe_editions.h"
+      ],
+      "xbe_id": "eur",
+      "cover": "img/cover-remix.jpg"
     }
-  ],
-  "extras": [
-    "mcdub3_env.example.txt"
   ]
 }
